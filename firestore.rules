@@ -1,0 +1,98 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ---------- helpers ----------
+    // Every request must come from a signed-in user whose email is verified
+    // (Google accounts are verified automatically).
+    function verified() {
+      return request.auth != null && request.auth.token.email_verified == true;
+    }
+    function isOwner(uid) {
+      return verified() && request.auth.uid == uid;
+    }
+    function validListingFields() {
+      let d = request.resource.data;
+      return d.title is string && d.title.size() > 0 && d.title.size() <= 80
+          && d.price is int && d.price > 0 && d.price <= 100000000
+          && d.category is string
+          && d.hub is string;
+    }
+
+    // ---------- users/{uid}: private to the owner ----------
+    match /users/{uid} {
+      allow read: if isOwner(uid);
+      allow create: if isOwner(uid)
+        && request.resource.data.keys().hasOnly(['name', 'email', 'year', 'hub', 'createdAt'])
+        && request.resource.data.email == request.auth.token.email
+        && request.resource.data.createdAt == request.time;
+      allow update: if isOwner(uid)
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['hub', 'year']);
+      allow delete: if false;
+    }
+
+    // ---------- listings/{id}: public to verified users, writable by the seller ----------
+    match /listings/{id} {
+      allow read: if verified();
+      allow create: if verified()
+        && request.resource.data.keys().hasOnly(
+             ['sellerId', 'sellerName', 'title', 'category', 'hub', 'price', 'photoCount', 'status', 'createdAt'])
+        && request.resource.data.sellerId == request.auth.uid
+        && request.resource.data.status == 'active'
+        && request.resource.data.createdAt == request.time
+        && validListingFields();
+      allow update: if verified()
+        && resource.data.sellerId == request.auth.uid
+        && request.resource.data.sellerId == resource.data.sellerId   // owner cannot be reassigned
+        && request.resource.data.diff(resource.data).affectedKeys()
+             .hasOnly(['title', 'price', 'category', 'hub', 'status', 'soldToName', 'soldAt'])
+        && validListingFields();
+      allow delete: if verified() && resource.data.sellerId == request.auth.uid;
+    }
+
+    // ---------- conversations/{id}: only the two participants ----------
+    match /conversations/{cid} {
+      // get on a missing doc (resource == null) lets the app check "does it exist?"
+      allow get: if verified()
+        && (resource == null || request.auth.uid in resource.data.participantIds);
+      allow list: if verified() && request.auth.uid in resource.data.participantIds;
+      allow create: if verified()
+        && request.resource.data.buyerId == request.auth.uid
+        && request.resource.data.participantIds == [request.resource.data.sellerId, request.auth.uid]
+        && request.resource.data.sellerId != request.auth.uid;
+      allow update: if verified()
+        && request.auth.uid in resource.data.participantIds
+        && request.resource.data.diff(resource.data).affectedKeys()
+             .hasOnly(['lastMessage', 'lastMessageAt', 'unreadBy', 'meetup']);
+      allow delete: if false;
+
+      // messages are append-only and only readable by participants
+      match /messages/{mid} {
+        function parent() {
+          return get(/databases/$(database)/documents/conversations/$(cid)).data;
+        }
+        allow read: if verified() && request.auth.uid in parent().participantIds;
+        allow create: if verified()
+          && request.auth.uid in parent().participantIds
+          && request.resource.data.senderId == request.auth.uid
+          && request.resource.data.text is string
+          && request.resource.data.text.size() > 0
+          && request.resource.data.text.size() <= 2000
+          && request.resource.data.createdAt == request.time;
+        allow update, delete: if false;
+      }
+    }
+
+    // ---------- reports/{id}: write-only for users (reviewed by admins in the console) ----------
+    match /reports/{id} {
+      allow create: if verified() && request.resource.data.reporterId == request.auth.uid;
+      allow read, update, delete: if false;
+    }
+
+    // Everything else is denied.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

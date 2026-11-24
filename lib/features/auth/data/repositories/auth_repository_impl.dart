@@ -8,10 +8,14 @@ import '../../domain/repositories/auth_repository.dart';
 class AuthRepositoryImpl implements AuthRepository {
   AuthRepositoryImpl({FirebaseAuth? auth, GoogleSignIn? googleSignIn})
       : _auth = auth ?? FirebaseAuth.instance,
-        _google = googleSignIn ?? GoogleSignIn();
+        _googleOverride = googleSignIn;
 
   final FirebaseAuth _auth;
-  final GoogleSignIn _google;
+  final GoogleSignIn? _googleOverride;
+
+  // Created on first use. The web build signs in with a popup instead, so it
+  // never constructs the plugin (which would demand a web client ID).
+  late final GoogleSignIn _google = _googleOverride ?? GoogleSignIn();
 
   AppUser? _map(User? u) => u == null
       ? null

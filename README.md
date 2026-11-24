@@ -45,7 +45,7 @@ Other files: `firestore.rules`, `firebase.json`, `docs/ERD.md` and `docs/ERD.png
 Requirements: a recent stable Flutter SDK, an Android emulator or phone, and a Firebase project.
 
 1. In the Firebase console create a project. Under Authentication, enable **Email/Password** and **Google**.
-2. Register the Android app. The package name is `com.example.alu_market_steps_3_5`.
+2. Register the Android app. The package name is `com.example.alu_market_place`.
 3. Get your debug SHA-1 with `cd android && ./gradlew signingReport`, add it under Project settings, then download `google-services.json` into `android/app/`.
 4. Create a Firestore database, then publish the rules: copy `firestore.rules` into Firestore, Rules, or run `firebase deploy --only firestore:rules`.
 5. Run:

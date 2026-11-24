@@ -7,7 +7,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.alu_market_steps_3_5"
+    namespace = "com.example.alu_market_place"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -18,7 +18,7 @@ android {
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "com.example.alu_market_steps_3_5"
+        applicationId = "com.example.alu_market_place"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = 23

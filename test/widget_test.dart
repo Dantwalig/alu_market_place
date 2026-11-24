@@ -1,30 +1,16 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:alu_market_place/main.dart';
+import 'package:alu_market_place/core/utils/formatters.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
-
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
-
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
-
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+  testWidgets('formatters are exercised via widget test smoke test',
+      (WidgetTester tester) async {
+    // Smoke test: ensure the formatter functions are reachable and correct.
+    expect(rwf(25000), 'RWF 25,000');
+    expect(formatClock(DateTime(2024, 1, 1, 9, 5)), '09:05');
+    expect(
+      formatWhen(DateTime(2024, 6, 15, 10, 45), now: DateTime(2024, 6, 15, 12, 0)),
+      '10:45 · Today',
+    );
   });
 }

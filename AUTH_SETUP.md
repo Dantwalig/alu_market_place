@@ -25,3 +25,4 @@ Code lives in `lib/features/auth` (domain / data / presentation + AuthBloc).
 1. Firebase console > Firestore Database > Create database (production mode).
 2. Rules tab: paste the contents of `firestore.rules` and Publish.
 3. Because rules require `email_verified`, users must verify their email before data loads.
+

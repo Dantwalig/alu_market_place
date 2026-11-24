@@ -3,7 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/tokens.dart';
 import '../../../../core/ui/ui_message.dart';
+import '../../../../core/utils/validators.dart';
 import '../../../../core/widgets.dart';
+import '../../presentation/widgets/auth_widgets.dart';
 import '../bloc/auth_bloc.dart';
 
 class ForgotPasswordPage extends StatefulWidget {
@@ -62,8 +64,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
             ),
             const SizedBox(height: 24),
             BlocListener<AuthBloc, AuthState>(
-              listenWhen: (p, c) =>
-                  c.message != null && p.nonce != c.nonce,
+              listenWhen: (p, c) => c.message != null && p.nonce != c.nonce,
               listener: (context, state) {
                 ScaffoldMessenger.of(context)
                   ..hideCurrentSnackBar()

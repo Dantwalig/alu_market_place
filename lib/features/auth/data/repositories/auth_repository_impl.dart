@@ -1,8 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
-import '../../../domain/entities/app_user.dart';
-import '../../../domain/repositories/auth_repository.dart';
+import '../../domain/entities/app_user.dart';
+import '../../domain/repositories/auth_repository.dart';
 
 /// Firebase-backed implementation of [AuthRepository].
 class AuthRepositoryImpl implements AuthRepository {
@@ -20,7 +20,8 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<void> registerWithEmail(String name, String email, String password) async {
+  Future<void> registerWithEmail(
+      String name, String email, String password) async {
     final cred = await _auth.createUserWithEmailAndPassword(
         email: email.trim(), password: password);
     await cred.user?.updateDisplayName(name);

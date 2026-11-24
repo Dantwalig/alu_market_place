@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../domain/entities/app_user.dart';
 import '../bloc/auth_bloc.dart';
 import 'login_page.dart';
 import 'shell.dart';

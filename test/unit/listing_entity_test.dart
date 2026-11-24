@@ -4,7 +4,7 @@ import 'package:alu_market_place/features/listings/domain/entities/listing.dart'
 
 void main() {
   group('Listing', () {
-    const listing = Listing(
+    final listing = Listing(
       id: 'L1',
       sellerId: 'U1',
       sellerName: 'Alice',
@@ -19,13 +19,23 @@ void main() {
 
     test('props include all fields', () {
       expect(listing.props, [
-        'L1', 'U1', 'Alice', 'Desk lamp', 'Furniture', 'Kigali Campus Hub',
-        12000, 3, false, null, null, DateTime(2024, 6, 10),
+        'L1',
+        'U1',
+        'Alice',
+        'Desk lamp',
+        'Furniture',
+        'Kigali Campus Hub',
+        12000,
+        3,
+        false,
+        null,
+        null,
+        DateTime(2024, 6, 10),
       ]);
     });
 
     test('equatable equality works for identical instances', () {
-      const other = Listing(
+      final other = Listing(
         id: 'L1',
         sellerId: 'U1',
         sellerName: 'Alice',
@@ -41,7 +51,7 @@ void main() {
     });
 
     test('different id means not equal', () {
-      const other = Listing(
+      final other = Listing(
         id: 'L2',
         sellerId: 'U1',
         sellerName: 'Alice',
@@ -54,7 +64,7 @@ void main() {
     });
 
     test('different price means not equal', () {
-      const other = Listing(
+      final other = Listing(
         id: 'L1',
         sellerId: 'U1',
         sellerName: 'Alice',

@@ -7,6 +7,7 @@ import 'package:alu_market_place/features/auth/domain/repositories/auth_reposito
 import 'package:alu_market_place/features/auth/presentation/bloc/auth_bloc.dart';
 
 class MockAuthRepository extends Mock implements AuthRepository {}
+
 void main() {
   late MockAuthRepository repo;
 
@@ -59,11 +60,11 @@ void main() {
       'login requested sets busy then clears busy on success',
       build: () {
         when(() => repo.signInWithEmail('alice@alu.edu', 'password123'))
-            .thenAnswer((_) async {});
+            .thenAnswer((_) async => null);
         return AuthBloc(repo);
       },
-      act: (bloc) => bloc.add(
-          AuthLoginRequested('alice@alu.edu', 'password123')),
+      act: (bloc) =>
+          bloc.add(AuthLoginRequested('alice@alu.edu', 'password123')),
       expect: () => [
         const AuthState(busy: true),
         AuthState(busy: false, message: null),
@@ -77,8 +78,7 @@ void main() {
             .thenThrow(const AuthFailure('Invalid email or password.'));
         return AuthBloc(repo);
       },
-      act: (bloc) => bloc.add(
-          const AuthLoginRequested('bad@alu.edu', 'wrong')),
+      act: (bloc) => bloc.add(const AuthLoginRequested('bad@alu.edu', 'wrong')),
       expect: () => [
         const AuthState(busy: true),
         AuthState(
@@ -94,13 +94,14 @@ void main() {
       build: () {
         when(() =>
                 repo.registerWithEmail('Alice', 'alice@alu.edu', 'password123'))
-            .thenAnswer((_) async {});
+            .thenAnswer((_) async => null);
         return AuthBloc(repo);
       },
-      act: (bloc) =>
-          bloc.add(const AuthRegisterRequested(
-            'Alice', 'alice@alu.edu', 'password123',
-          )),
+      act: (bloc) => bloc.add(const AuthRegisterRequested(
+        'Alice',
+        'alice@alu.edu',
+        'password123',
+      )),
       expect: () => [
         const AuthState(busy: true),
         AuthState(busy: false, message: null),
@@ -110,7 +111,7 @@ void main() {
     blocTest<AuthBloc, AuthState>(
       'google sign-in requested sets busy then clears busy',
       build: () {
-        when(() => repo.signInWithGoogle()).thenAnswer((_) async {});
+        when(() => repo.signInWithGoogle()).thenAnswer((_) async => null);
         return AuthBloc(repo);
       },
       act: (bloc) => bloc.add(const AuthGoogleRequested()),
@@ -124,10 +125,11 @@ void main() {
       'password reset requested emits success message',
       build: () {
         when(() => repo.sendPasswordReset('alice@alu.edu'))
-            .thenAnswer((_) async {});
+            .thenAnswer((_) async => null);
         return AuthBloc(repo);
       },
-      act: (bloc) => bloc.add(const AuthPasswordResetRequested('alice@alu.edu')),
+      act: (bloc) =>
+          bloc.add(const AuthPasswordResetRequested('alice@alu.edu')),
       expect: () => [
         const AuthState(busy: true),
         AuthState(
@@ -140,7 +142,7 @@ void main() {
     blocTest<AuthBloc, AuthState>(
       'verification resend requested emits success message',
       build: () {
-        when(() => repo.sendVerificationEmail()).thenAnswer((_) async {});
+        when(() => repo.sendVerificationEmail()).thenAnswer((_) async => null);
         return AuthBloc(repo);
       },
       act: (bloc) => bloc.add(const AuthVerificationResendRequested()),
@@ -153,7 +155,7 @@ void main() {
     blocTest<AuthBloc, AuthState>(
       'logout requested sets busy then unauthenticated',
       build: () {
-        when(() => repo.signOut()).thenAnswer((_) async {});
+        when(() => repo.signOut()).thenAnswer((_) async => null);
         when(() => repo.authStateChanges).thenAnswer((_) => Stream.value(null));
         return AuthBloc(repo);
       },

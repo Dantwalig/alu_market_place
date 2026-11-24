@@ -16,7 +16,8 @@ void main() {
 
   setUp(() {
     repo = MockListingRepository();
-    user = const AppUser(uid: 'U1', email: 'alice@alu.edu', displayName: 'Alice');
+    user =
+        const AppUser(uid: 'U1', email: 'alice@alu.edu', displayName: 'Alice');
   });
 
   group('CreateListingCubit', () {
@@ -57,7 +58,9 @@ void main() {
       cubit.addPhoto();
       cubit.addPhoto();
       expect(cubit.state.photos, 2);
-      for (var i = 0; i < 4; i++) cubit.addPhoto();
+      for (var i = 0; i < 4; i++) {
+        cubit.addPhoto();
+      }
       expect(cubit.state.photos, 5);
       cubit.close();
     });
@@ -121,9 +124,14 @@ void main() {
             hub: 'Hub',
             price: 12000,
             photoCount: 1,
-          )).thenAnswer((_) async => const Listing(
-            id: 'L1', sellerId: 'U1', sellerName: 'Alice', title: 'Desk lamp',
-            category: 'Furniture', hub: 'Hub', price: 12000,
+          )).thenAnswer((_) async => Listing(
+            id: 'L1',
+            sellerId: 'U1',
+            sellerName: 'Alice',
+            title: 'Desk lamp',
+            category: 'Furniture',
+            hub: 'Hub',
+            price: 12000,
           ));
       final cubit = CreateListingCubit(repo, user, 'Hub');
       cubit.setTitle('Desk lamp');

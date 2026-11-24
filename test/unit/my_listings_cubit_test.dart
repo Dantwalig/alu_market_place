@@ -15,13 +15,23 @@ void main() {
 
   final listings = [
     Listing(
-      id: 'L1', sellerId: 'U1', sellerName: 'Alice', title: 'Desk lamp',
-      category: 'Furniture', hub: 'Kigali Campus Hub', price: 12000,
+      id: 'L1',
+      sellerId: 'U1',
+      sellerName: 'Alice',
+      title: 'Desk lamp',
+      category: 'Furniture',
+      hub: 'Kigali Campus Hub',
+      price: 12000,
       sold: false,
     ),
     Listing(
-      id: 'L2', sellerId: 'U1', sellerName: 'Alice', title: 'Textbook',
-      category: 'Books', hub: 'Library Entrance', price: 8000,
+      id: 'L2',
+      sellerId: 'U1',
+      sellerName: 'Alice',
+      title: 'Textbook',
+      category: 'Books',
+      hub: 'Library Entrance',
+      price: 8000,
       sold: true,
     ),
   ];
@@ -32,8 +42,9 @@ void main() {
 
   group('MyListingsCubit', () {
     test('bind loads my listings and sets loading false', () async {
-      when(() => repo.watchMyListings('U1'))
-          .thenAnswer((_) async* { yield listings; });
+      when(() => repo.watchMyListings('U1')).thenAnswer((_) async* {
+        yield listings;
+      });
 
       final cubit = MyListingsCubit(repo);
       await cubit.bind(const AppUser(uid: 'U1', email: 'a@b.c'));
@@ -67,7 +78,7 @@ void main() {
 
     test('edit success emits success message and updates repo', () async {
       when(() => repo.update('L1', title: 'New title', price: 15000))
-          .thenAnswer((_) async {});
+          .thenAnswer((_) async => null);
       final cubit = MyListingsCubit(repo);
 
       await cubit.edit('L1', title: 'New title', price: 15000);
@@ -93,7 +104,7 @@ void main() {
     });
 
     test('remove success deletes from repo and emits success', () async {
-      when(() => repo.delete('L1')).thenAnswer((_) async {});
+      when(() => repo.delete('L1')).thenAnswer((_) async => null);
       final cubit = MyListingsCubit(repo);
 
       await cubit.remove('L1');
@@ -104,7 +115,8 @@ void main() {
     });
 
     test('remove failure emits error message', () async {
-      when(() => repo.delete('L1')).thenThrow(const AppException('Delete failed.'));
+      when(() => repo.delete('L1'))
+          .thenThrow(const AppException('Delete failed.'));
       final cubit = MyListingsCubit(repo);
 
       await cubit.remove('L1');

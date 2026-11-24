@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../core/ui/nav_cubit.dart';
-import '../../../core/widgets.dart';
-import '../../../features/listings/presentation/pages/browse_screen.dart';
-import '../../../features/listings/presentation/pages/create_listing_screen.dart';
-import '../../../features/listings/presentation/pages/search_screen.dart';
-import '../../../features/messages/presentation/cubit/conversations_cubit.dart';
-import '../../../features/messages/presentation/pages/messages_screen.dart';
-import '../../../features/profile/presentation/pages/profile_screen.dart';
-import '../../../features/settings/presentation/cubit/settings_cubit.dart';
+import '../../../../core/ui/nav_cubit.dart';
+import '../../../../core/widgets.dart';
+import '../../../../features/listings/presentation/pages/browse_screen.dart';
+import '../../../../features/listings/presentation/pages/create_listing_screen.dart';
+import '../../../../features/listings/presentation/pages/search_screen.dart';
+import '../../../../features/messages/presentation/cubit/conversations_cubit.dart';
+import '../../../../features/messages/presentation/pages/messages_screen.dart';
+import '../../../../features/profile/presentation/pages/profile_screen.dart';
+import '../../../../features/settings/presentation/cubit/settings_cubit.dart';
 import '../../bloc/auth_bloc.dart';
 
 /// Bottom-navigation shell shown after sign in.
@@ -26,10 +26,10 @@ class Shell extends StatelessWidget {
       builder: (context, state) {
         return BlocBuilder<NavCubit, int>(
           builder: (context, i) => Scaffold(
-            body: IndexedStack(index: i, children: const [
+            body: IndexedStack(index: i, children: [
               BrowseScreen(),
               SearchScreen(),
-              SizedBox.shrink(),
+              const SizedBox.shrink(),
               MessagesScreen(),
               ProfileScreen(),
             ]),
@@ -38,7 +38,8 @@ class Shell extends StatelessWidget {
               badges: showBadge ? {3: unread} : const {},
               onTap: (n) {
                 if (n == 2) {
-                  Navigator.of(context).push(CreateListingScreen.route(context));
+                  Navigator.of(context)
+                      .push(CreateListingScreen.route(context));
                 } else {
                   context.read<NavCubit>().setTab(n);
                 }

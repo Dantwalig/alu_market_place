@@ -14,12 +14,22 @@ void main() {
 
   final listings = [
     Listing(
-      id: 'L1', sellerId: 'U2', sellerName: 'Bob', title: 'Desk lamp',
-      category: 'Furniture', hub: 'Kigali Campus Hub', price: 12000,
+      id: 'L1',
+      sellerId: 'U2',
+      sellerName: 'Bob',
+      title: 'Desk lamp',
+      category: 'Furniture',
+      hub: 'Kigali Campus Hub',
+      price: 12000,
     ),
     Listing(
-      id: 'L2', sellerId: 'U2', sellerName: 'Bob', title: 'Textbook',
-      category: 'Books', hub: 'Library Entrance', price: 8000,
+      id: 'L2',
+      sellerId: 'U2',
+      sellerName: 'Bob',
+      title: 'Textbook',
+      category: 'Books',
+      hub: 'Library Entrance',
+      price: 8000,
     ),
   ];
 
@@ -29,8 +39,9 @@ void main() {
 
   group('SearchCubit', () {
     test('bind loads active listings and sets uid', () async {
-      when(() => repo.watchActiveListings())
-          .thenAnswer((_) async* { yield listings; });
+      when(() => repo.watchActiveListings()).thenAnswer((_) async* {
+        yield listings;
+      });
 
       final cubit = SearchCubit(repo);
       await cubit.bind(const AppUser(uid: 'U1', email: 'a@b.c'));

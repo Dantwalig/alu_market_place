@@ -38,7 +38,7 @@ void main() {
           BlocProvider<AuthBloc>.value(value: authBloc),
           BlocProvider<SettingsCubit>.value(value: settingsCubit),
         ],
-        child: const MaterialApp(home: LoginPage()),
+        child: MaterialApp(home: LoginPage()),
       );
 
   group('LoginPage', () {
@@ -87,8 +87,7 @@ void main() {
       await tester.pumpWidget(buildTestableWidget());
 
       await tester.enterText(find.byType(TextField).first, 'alice@alu.edu');
-      await tester.enterText(
-          find.byType(TextField).last, 'password123');
+      await tester.enterText(find.byType(TextField).last, 'password123');
       await tester.pump();
 
       await tester.tap(find.text('Log in'));
@@ -116,8 +115,7 @@ void main() {
       await tester.pumpWidget(buildTestableWidget());
 
       await tester.enterText(find.byType(TextField).first, 'alice@alu.edu');
-      await tester.enterText(
-          find.byType(TextField).last, 'password123');
+      await tester.enterText(find.byType(TextField).last, 'password123');
       await tester.pump();
 
       await tester.tap(find.text('Log in'));

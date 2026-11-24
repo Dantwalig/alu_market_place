@@ -66,8 +66,9 @@ class ChatCubit extends Cubit<ChatState> {
     _convSub = _messages.watchConversation(conversationId).listen((c) {
       if (c == null) return;
       emit(state.copyWith(conversation: c));
-      if (c.isUnreadFor(me.uid))
+      if (c.isUnreadFor(me.uid)) {
         _messages.markRead(conversationId, me.uid).catchError((_) {});
+      }
       if (_listingId != c.listingId) {
         _listingId = c.listingId;
         _listingSub?.cancel();
@@ -135,8 +136,9 @@ class ChatCubit extends Cubit<ChatState> {
   Future<void> _run(Future<void> Function() action, {String? success}) async {
     try {
       await action();
-      if (success != null)
+      if (success != null) {
         emit(state.copyWith(message: UiMessage.success(success)));
+      }
     } on AppException catch (e) {
       emit(state.copyWith(message: UiMessage.error(e.message)));
     }

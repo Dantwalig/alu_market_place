@@ -53,8 +53,9 @@ class ProfileScreen extends StatelessWidget {
       context: context,
       builder: (_) => EditListingDialog(listing: l),
     );
-    if (result != null)
+    if (result != null) {
       cubit.edit(l.id, title: result.title, price: result.price);
+    }
   }
 
   Future<void> _delete(BuildContext context, Listing l) async {
@@ -77,7 +78,9 @@ class ProfileScreen extends StatelessWidget {
         ],
       ),
     );
-    if (ok == true) cubit.remove(l.id);
+    if (ok == true) {
+      cubit.remove(l.id);
+    }
   }
 
   @override

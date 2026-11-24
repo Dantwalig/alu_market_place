@@ -11,6 +11,7 @@ import 'package:alu_market_place/features/listings/presentation/pages/search_scr
 import 'package:alu_market_place/features/messages/presentation/cubit/conversations_cubit.dart';
 
 class MockListingRepository extends Mock implements ListingRepository {}
+
 class MockConversationsCubit extends Mock implements ConversationsCubit {}
 
 void main() {
@@ -20,12 +21,22 @@ void main() {
 
   final listings = [
     Listing(
-      id: 'L1', sellerId: 'U2', sellerName: 'Bob', title: 'Desk lamp',
-      category: 'Furniture', hub: 'Kigali Campus Hub', price: 12000,
+      id: 'L1',
+      sellerId: 'U2',
+      sellerName: 'Bob',
+      title: 'Desk lamp',
+      category: 'Furniture',
+      hub: 'Kigali Campus Hub',
+      price: 12000,
     ),
     Listing(
-      id: 'L2', sellerId: 'U2', sellerName: 'Bob', title: 'Textbook',
-      category: 'Books', hub: 'Library Entrance', price: 8000,
+      id: 'L2',
+      sellerId: 'U2',
+      sellerName: 'Bob',
+      title: 'Textbook',
+      category: 'Books',
+      hub: 'Library Entrance',
+      price: 8000,
     ),
   ];
 
@@ -52,7 +63,7 @@ void main() {
           BlocProvider<SearchCubit>.value(value: searchCubit),
           BlocProvider<ConversationsCubit>.value(value: mockConversationsCubit),
         ],
-        child: const MaterialApp(home: SearchScreen()),
+        child: MaterialApp(home: SearchScreen()),
       );
 
   group('SearchScreen', () {

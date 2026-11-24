@@ -9,7 +9,8 @@ void main() {
     expect(rwf(25000), 'RWF 25,000');
     expect(formatClock(DateTime(2024, 1, 1, 9, 5)), '09:05');
     expect(
-      formatWhen(DateTime(2024, 6, 15, 10, 45), now: DateTime(2024, 6, 15, 12, 0)),
+      formatWhen(DateTime(2024, 6, 15, 10, 45),
+          now: DateTime(2024, 6, 15, 12, 0)),
       '10:45 · Today',
     );
   });

@@ -200,6 +200,7 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
       const SizedBox(height: 20),
       const Text('CATEGORY', style: T.fieldLabel),
       const SizedBox(height: 8),
+      // ignore: deprecated_member_use
       DropdownButtonFormField<String>(
         value: s.category,
         isExpanded: true,

@@ -10,9 +10,9 @@ class DefaultFirebaseOptions {
   static const FirebaseOptions web = FirebaseOptions(
     apiKey: 'PASTE_API_KEY',
     appId: 'PASTE_APP_ID',
-    messagingSenderId: 'PASTE_MESSAGING_SENDER_ID',
-    projectId: 'PASTE_PROJECT_ID',
-    authDomain: 'PASTE_AUTH_DOMAIN',
-    storageBucket: 'PASTE_STORAGE_BUCKET',
+    messagingSenderId: '268052683107',
+    projectId: 'alu-market',
+    authDomain: 'alu-market.firebaseapp.com',
+    storageBucket: 'alu-market.firebasestorage.app',
   );
 }

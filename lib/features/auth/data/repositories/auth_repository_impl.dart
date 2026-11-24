@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:google_sign_in/google_sign_in.dart';
 
 import '../../domain/entities/app_user.dart';
@@ -41,6 +42,12 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   Future<void> signInWithGoogle() => _guard(() async {
+        if (kIsWeb) {
+          // The google_sign_in plugin is unreliable in the browser, so the web
+          // build uses Firebase's own popup flow instead.
+          await _auth.signInWithPopup(GoogleAuthProvider());
+          return;
+        }
         final account = await _google.signIn();
         if (account == null) {
           throw const AuthFailure('Google sign-in was cancelled.');
@@ -72,9 +79,11 @@ class AuthRepositoryImpl implements AuthRepository {
   @override
   Future<void> signOut() async {
     // Sign out of Google too, so the account picker shows again next time.
-    try {
-      await _google.signOut();
-    } catch (_) {}
+    if (!kIsWeb) {
+      try {
+        await _google.signOut();
+      } catch (_) {}
+    }
     await _auth.signOut();
   }
 
@@ -109,6 +118,11 @@ class AuthRepositoryImpl implements AuthRepository {
         return 'Too many attempts. Please wait a moment and try again.';
       case 'network-request-failed':
         return 'No internet connection. Check your network and try again.';
+      case 'popup-closed-by-user':
+      case 'cancelled-popup-request':
+        return 'Google sign-in was cancelled.';
+      case 'popup-blocked':
+        return 'The sign-in popup was blocked. Allow popups for this site.';
       case 'account-exists-with-different-credential':
         return 'This email is already registered with a different sign-in method.';
       default:

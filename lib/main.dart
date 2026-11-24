@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -30,11 +31,15 @@ import 'features/profile/presentation/pages/profile_screen.dart';
 import 'features/settings/data/repositories/shared_prefs_settings_repository.dart';
 import 'features/settings/domain/repositories/settings_repository.dart';
 import 'features/settings/presentation/cubit/settings_cubit.dart';
+import 'firebase_options.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  // Uses android/app/google-services.json (see AUTH_SETUP.md).
-  await Firebase.initializeApp();
+  // Android reads android/app/google-services.json (see AUTH_SETUP.md). The web
+  // build has no such file, so it needs explicit options.
+  await Firebase.initializeApp(
+    options: kIsWeb ? DefaultFirebaseOptions.web : null,
+  );
   // Load saved preferences before the first frame so there is no flash of defaults.
   final prefs = await SharedPreferences.getInstance();
   runApp(MarketApp(settings: SharedPrefsSettingsRepository(prefs)));

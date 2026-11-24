@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/tokens.dart';
-import '../../../../core/ui/ui_message.dart';
 import '../../../../core/utils/validators.dart';
 import '../../../../core/widgets.dart';
 import '../../../settings/domain/entities/app_settings.dart';

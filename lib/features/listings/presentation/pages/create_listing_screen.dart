@@ -200,12 +200,14 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
       const SizedBox(height: 20),
       const Text('CATEGORY', style: T.fieldLabel),
       const SizedBox(height: 8),
-      // ignore: deprecated_member_use
       DropdownButtonFormField<String>(
-        value: s.category,
+        // initialValue only seeds the field, so the key rebuilds it when the
+        // cubit changes the category (for example after the form is reset).
+        key: ValueKey(s.category),
+        initialValue: s.category,
         isExpanded: true,
         icon: const Icon(Icons.keyboard_arrow_down, color: C.slate),
-        hint: Text('Select category', style: T.bodySlate),
+        hint: const Text('Select category', style: T.bodySlate),
         style: T.body,
         decoration: InputDecoration(
           contentPadding:

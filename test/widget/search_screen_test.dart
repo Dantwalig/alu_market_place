@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
-import 'package:alu_market_place/features/auth/domain/entities/app_user.dart';
 import 'package:alu_market_place/features/listings/domain/entities/listing.dart';
 import 'package:alu_market_place/features/listings/domain/repositories/listing_repository.dart';
 import 'package:alu_market_place/features/listings/presentation/cubit/search_cubit.dart';
@@ -16,7 +15,7 @@ void main() {
   late SearchCubit searchCubit;
 
   final listings = [
-    Listing(
+    const Listing(
       id: 'L1',
       sellerId: 'U2',
       sellerName: 'Bob',
@@ -25,7 +24,7 @@ void main() {
       hub: 'Kigali Campus Hub',
       price: 12000,
     ),
-    Listing(
+    const Listing(
       id: 'L2',
       sellerId: 'U2',
       sellerName: 'Bob',
@@ -57,7 +56,7 @@ void main() {
         providers: [
           BlocProvider<SearchCubit>.value(value: searchCubit),
         ],
-        child: MaterialApp(home: SearchScreen()),
+        child: const MaterialApp(home: SearchScreen()),
       );
 
   group('SearchScreen', () {
@@ -67,8 +66,10 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.byType(TextField), findsOneWidget);
-      expect(find.text('Furniture'), findsOneWidget);
-      expect(find.text('Books'), findsOneWidget);
+      // Furniture and Books also appear as tags on the listing cards, so
+      // they match more than one widget. Electronics has no listing.
+      expect(find.text('Furniture'), findsWidgets);
+      expect(find.text('Books'), findsWidgets);
       expect(find.text('Electronics'), findsOneWidget);
     });
 
@@ -85,7 +86,7 @@ void main() {
 
     testWidgets('shows "No matching listings" when results are empty',
         (WidgetTester tester) async {
-      searchCubit.emit(SearchState(
+      searchCubit.emit(const SearchState(
         all: [],
         uid: 'U1',
         query: '',
@@ -108,6 +109,5 @@ void main() {
       expect(find.text('Desk lamp'), findsOneWidget);
       expect(find.text('Textbook'), findsNothing);
     });
-
   });
 }

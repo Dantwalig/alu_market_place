@@ -1,8 +1,7 @@
 import 'package:mocktail/mocktail.dart';
-import 'package:test/test.dart';
+import 'package:flutter_test/flutter_test.dart';
 
 import 'package:alu_market_place/core/errors/app_exception.dart';
-import 'package:alu_market_place/core/ui/ui_message.dart';
 import 'package:alu_market_place/features/auth/domain/entities/app_user.dart';
 import 'package:alu_market_place/features/listings/domain/entities/listing.dart';
 import 'package:alu_market_place/features/listings/domain/repositories/listing_repository.dart';
@@ -14,7 +13,7 @@ void main() {
   late MockListingRepository repo;
 
   final listings = [
-    Listing(
+    const Listing(
       id: 'L1',
       sellerId: 'U1',
       sellerName: 'Alice',
@@ -24,7 +23,7 @@ void main() {
       price: 12000,
       sold: false,
     ),
-    Listing(
+    const Listing(
       id: 'L2',
       sellerId: 'U1',
       sellerName: 'Alice',
@@ -81,7 +80,7 @@ void main() {
 
     test('edit success emits success message and updates repo', () async {
       when(() => repo.update('L1', title: 'New title', price: 15000))
-          .thenAnswer((_) async => null);
+          .thenAnswer((_) async {});
       final cubit = MyListingsCubit(repo);
 
       await cubit.edit('L1', title: 'New title', price: 15000);
@@ -107,7 +106,7 @@ void main() {
     });
 
     test('remove success deletes from repo and emits success', () async {
-      when(() => repo.delete('L1')).thenAnswer((_) async => null);
+      when(() => repo.delete('L1')).thenAnswer((_) async {});
       final cubit = MyListingsCubit(repo);
 
       await cubit.remove('L1');

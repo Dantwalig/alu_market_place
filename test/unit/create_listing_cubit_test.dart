@@ -1,8 +1,7 @@
 import 'package:mocktail/mocktail.dart';
-import 'package:test/test.dart';
+import 'package:flutter_test/flutter_test.dart';
 
 import 'package:alu_market_place/core/errors/app_exception.dart';
-import 'package:alu_market_place/core/ui/ui_message.dart';
 import 'package:alu_market_place/features/auth/domain/entities/app_user.dart';
 import 'package:alu_market_place/features/listings/domain/entities/listing.dart';
 import 'package:alu_market_place/features/listings/domain/repositories/listing_repository.dart';
@@ -124,7 +123,7 @@ void main() {
             hub: 'Hub',
             price: 12000,
             photoCount: 1,
-          )).thenAnswer((_) async => Listing(
+          )).thenAnswer((_) async => const Listing(
             id: 'L1',
             sellerId: 'U1',
             sellerName: 'Alice',

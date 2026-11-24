@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "268052683107",
+    "project_id": "alu-market",
+    "storage_bucket": "alu-market.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:268052683107:android:2bd6d112296a1499855b56",
+        "android_client_info": {
+          "package_name": "com.example.alu_market_place"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "268052683107-56m88l8n7u1afil3mr3g1n4sfth0pu3i.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA6HWvCkl4liBRePXILQhhNYbyL6iNtnWA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "268052683107-56m88l8n7u1afil3mr3g1n4sfth0pu3i.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

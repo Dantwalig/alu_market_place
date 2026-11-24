@@ -4,12 +4,10 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
 import 'package:alu_market_place/core/utils/validators.dart';
-import 'package:alu_market_place/features/auth/domain/entities/app_user.dart';
 import 'package:alu_market_place/features/auth/domain/repositories/auth_repository.dart';
 import 'package:alu_market_place/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:alu_market_place/features/auth/presentation/pages/login_page.dart';
 import 'package:alu_market_place/features/settings/data/repositories/shared_prefs_settings_repository.dart';
-import 'package:alu_market_place/features/settings/domain/repositories/settings_repository.dart';
 import 'package:alu_market_place/features/settings/presentation/cubit/settings_cubit.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -38,7 +36,7 @@ void main() {
           BlocProvider<AuthBloc>.value(value: authBloc),
           BlocProvider<SettingsCubit>.value(value: settingsCubit),
         ],
-        child: MaterialApp(home: LoginPage()),
+        child: const MaterialApp(home: LoginPage()),
       );
 
   group('LoginPage', () {
@@ -61,23 +59,28 @@ void main() {
       await tester.pumpAndSettle(const Duration(seconds: 1));
 
       // Validators should show error text on empty fields
-      expect(find.text('Enter your email'), findsOneWidget);
-      expect(find.text('Enter your password'), findsOneWidget);
+      expect(find.text('Please enter your email'), findsOneWidget);
+      expect(find.text('Please enter your password'), findsOneWidget);
     });
 
     testWidgets('email validator rejects invalid email',
         (WidgetTester tester) async {
-      expect(Validators.email(''), 'Enter your email');
-      expect(Validators.email('not-an-email'), 'Enter a valid email');
+      expect(Validators.email(''), 'Please enter your email');
+      expect(Validators.email('not-an-email'), 'Enter a valid email address');
       expect(Validators.email('alice@alu.edu'), null);
     });
 
-    testWidgets('password validator rejects short password',
+    testWidgets('password validators reject empty and weak passwords',
         (WidgetTester tester) async {
-      expect(Validators.requiredPassword(''), 'Enter your password');
-      expect(Validators.requiredPassword('12345'),
-          'Password must be at least 6 characters');
+      // Login only checks that something was typed.
+      expect(Validators.requiredPassword(''), 'Please enter your password');
       expect(Validators.requiredPassword('password123'), null);
+      // Registration enforces length, a letter and a number.
+      expect(Validators.newPassword('12345'),
+          'Password must be at least 8 characters');
+      expect(Validators.newPassword('password'),
+          'Use at least one letter and one number');
+      expect(Validators.newPassword('password123'), null);
     });
 
     testWidgets('google sign-in button calls signInWithGoogle',
@@ -90,6 +93,5 @@ void main() {
 
       verify(() => mockAuthRepo.signInWithGoogle()).called(1);
     });
-
   });
 }

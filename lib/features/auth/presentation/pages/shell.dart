@@ -26,10 +26,10 @@ class Shell extends StatelessWidget {
       builder: (context, state) {
         return BlocBuilder<NavCubit, int>(
           builder: (context, i) => Scaffold(
-            body: IndexedStack(index: i, children: [
+            body: IndexedStack(index: i, children: const [
               BrowseScreen(),
               SearchScreen(),
-              const SizedBox.shrink(),
+              SizedBox.shrink(),
               MessagesScreen(),
               ProfileScreen(),
             ]),

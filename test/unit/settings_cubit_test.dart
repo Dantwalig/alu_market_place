@@ -1,5 +1,5 @@
 import 'package:mocktail/mocktail.dart';
-import 'package:test/test.dart';
+import 'package:flutter_test/flutter_test.dart';
 
 import 'package:alu_market_place/features/settings/domain/entities/app_settings.dart';
 import 'package:alu_market_place/features/settings/domain/repositories/settings_repository.dart';
@@ -30,7 +30,7 @@ void main() {
     test('setTextSize emits and saves the new size', () async {
       when(() => repo.load())
           .thenReturn(const AppSettings(textSize: TextSize.normal));
-      when(() => repo.save(any())).thenAnswer((_) async => null);
+      when(() => repo.save(any())).thenAnswer((_) async {});
       final cubit = SettingsCubit(repo);
 
       await cubit.setTextSize(TextSize.large);
@@ -42,7 +42,7 @@ void main() {
 
     test('setShowUnreadBadge toggles the badge', () async {
       when(() => repo.load()).thenReturn(const AppSettings());
-      when(() => repo.save(any())).thenAnswer((_) async => null);
+      when(() => repo.save(any())).thenAnswer((_) async {});
       final cubit = SettingsCubit(repo);
 
       expect(cubit.state.showUnreadBadge, true);
@@ -59,7 +59,7 @@ void main() {
         rememberEmail: true,
         savedEmail: 'alice@alu.edu',
       ));
-      when(() => repo.save(any())).thenAnswer((_) async => null);
+      when(() => repo.save(any())).thenAnswer((_) async {});
       final cubit = SettingsCubit(repo);
 
       expect(cubit.state.rememberEmail, true);
@@ -72,7 +72,7 @@ void main() {
     test('rememberLogin saves email only when opted in', () async {
       when(() => repo.load())
           .thenReturn(const AppSettings(rememberEmail: true));
-      when(() => repo.save(any())).thenAnswer((_) async => null);
+      when(() => repo.save(any())).thenAnswer((_) async {});
       final cubit = SettingsCubit(repo);
 
       await cubit.rememberLogin('alice@alu.edu');
@@ -83,7 +83,7 @@ void main() {
     test('rememberLogin does nothing when not opted in', () async {
       when(() => repo.load())
           .thenReturn(const AppSettings(rememberEmail: false));
-      when(() => repo.save(any())).thenAnswer((_) async => null);
+      when(() => repo.save(any())).thenAnswer((_) async {});
       final cubit = SettingsCubit(repo);
 
       await cubit.rememberLogin('alice@alu.edu');
@@ -94,7 +94,7 @@ void main() {
     test('resetToDefaults restores default settings', () async {
       when(() => repo.load())
           .thenReturn(const AppSettings(textSize: TextSize.large));
-      when(() => repo.save(any())).thenAnswer((_) async => null);
+      when(() => repo.save(any())).thenAnswer((_) async {});
       final cubit = SettingsCubit(repo);
 
       expect(cubit.state.textSize, TextSize.large);

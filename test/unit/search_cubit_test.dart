@@ -1,5 +1,5 @@
 import 'package:mocktail/mocktail.dart';
-import 'package:test/test.dart';
+import 'package:flutter_test/flutter_test.dart';
 
 import 'package:alu_market_place/core/ui/ui_message.dart';
 import 'package:alu_market_place/features/auth/domain/entities/app_user.dart';
@@ -13,7 +13,7 @@ void main() {
   late MockListingRepository repo;
 
   final listings = [
-    Listing(
+    const Listing(
       id: 'L1',
       sellerId: 'U2',
       sellerName: 'Bob',
@@ -22,7 +22,7 @@ void main() {
       hub: 'Kigali Campus Hub',
       price: 12000,
     ),
-    Listing(
+    const Listing(
       id: 'L2',
       sellerId: 'U2',
       sellerName: 'Bob',
@@ -35,6 +35,9 @@ void main() {
 
   setUp(() {
     repo = MockListingRepository();
+    // Default stub so bind() never receives null from the mock.
+    when(() => repo.watchActiveListings())
+        .thenAnswer((_) => const Stream<List<Listing>>.empty());
   });
 
   group('SearchCubit', () {
@@ -45,6 +48,8 @@ void main() {
 
       final cubit = SearchCubit(repo);
       await cubit.bind(const AppUser(uid: 'U1', email: 'a@b.c'));
+      // bind() only subscribes; give the stream a turn to deliver its event.
+      await Future<void>.delayed(Duration.zero);
 
       expect(cubit.state.uid, 'U1');
       expect(cubit.state.all, equals(listings));
@@ -99,7 +104,7 @@ void main() {
       expect(cubit.state.results.first.title, 'Desk lamp');
 
       // Query filter
-      cubit.emit(cubit.state.copyWith(query: 'text', category: null));
+      cubit.emit(cubit.state.copyWith(query: 'text', clearCategory: true));
       expect(cubit.state.results.length, 1);
       expect(cubit.state.results.first.title, 'Textbook');
 

@@ -1,4 +1,4 @@
-import 'package:test/test.dart';
+import 'package:flutter_test/flutter_test.dart';
 
 import 'package:alu_market_place/features/listings/domain/entities/listing.dart';
 
@@ -51,7 +51,7 @@ void main() {
     });
 
     test('different id means not equal', () {
-      final other = Listing(
+      const other = Listing(
         id: 'L2',
         sellerId: 'U1',
         sellerName: 'Alice',
@@ -64,7 +64,7 @@ void main() {
     });
 
     test('different price means not equal', () {
-      final other = Listing(
+      const other = Listing(
         id: 'L1',
         sellerId: 'U1',
         sellerName: 'Alice',

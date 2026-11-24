@@ -42,8 +42,9 @@ class AuthRepositoryImpl implements AuthRepository {
   @override
   Future<void> signInWithGoogle() => _guard(() async {
         final account = await _google.signIn();
-        if (account == null)
+        if (account == null) {
           throw const AuthFailure('Google sign-in was cancelled.');
+        }
         final tokens = await account.authentication;
         final credential = GoogleAuthProvider.credential(
           accessToken: tokens.accessToken,

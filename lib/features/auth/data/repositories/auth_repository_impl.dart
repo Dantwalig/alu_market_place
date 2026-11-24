@@ -4,69 +4,114 @@ import 'package:google_sign_in/google_sign_in.dart';
 import '../../domain/entities/app_user.dart';
 import '../../domain/repositories/auth_repository.dart';
 
-/// Firebase-backed implementation of [AuthRepository].
 class AuthRepositoryImpl implements AuthRepository {
-  AuthRepositoryImpl();
-  final _auth = FirebaseAuth.instance;
+  AuthRepositoryImpl({FirebaseAuth? auth, GoogleSignIn? googleSignIn})
+      : _auth = auth ?? FirebaseAuth.instance,
+        _google = googleSignIn ?? GoogleSignIn();
+
+  final FirebaseAuth _auth;
+  final GoogleSignIn _google;
+
+  AppUser? _map(User? u) => u == null
+      ? null
+      : AppUser(
+          uid: u.uid,
+          email: u.email ?? '',
+          displayName: u.displayName,
+          // Google accounts arrive verified; email/password ones must verify.
+          emailVerified: u.emailVerified,
+        );
 
   @override
-  Stream<AppUser?> get authStateChanges =>
-      _auth.authStateChanges().map(_userFromFirebase);
+  Stream<AppUser?> get authStateChanges => _auth.authStateChanges().map(_map);
 
   @override
-  Future<void> signInWithEmail(String email, String password) async {
-    await _auth.signInWithEmailAndPassword(
-        email: email.trim(), password: password);
-  }
+  Future<void> signInWithEmail(String email, String password) =>
+      _guard(() => _auth.signInWithEmailAndPassword(
+          email: email.trim(), password: password));
 
   @override
-  Future<void> registerWithEmail(
-      String name, String email, String password) async {
-    final cred = await _auth.createUserWithEmailAndPassword(
-        email: email.trim(), password: password);
-    await cred.user?.updateDisplayName(name);
-    await cred.user?.sendEmailVerification();
-  }
+  Future<void> registerWithEmail(String name, String email, String password) =>
+      _guard(() async {
+        final cred = await _auth.createUserWithEmailAndPassword(
+            email: email.trim(), password: password);
+        await cred.user?.updateDisplayName(name.trim());
+        await cred.user?.sendEmailVerification();
+      });
 
   @override
-  Future<void> signInWithGoogle() async {
-    final googleUser = await GoogleSignIn().signIn();
-    if (googleUser == null) return;
-    final googleAuth = await googleUser.authentication;
-    final cred = GoogleAuthProvider.credential(
-        accessToken: googleAuth.accessToken, idToken: googleAuth.idToken);
-    await _auth.signInWithCredential(cred);
-  }
+  Future<void> signInWithGoogle() => _guard(() async {
+        final account = await _google.signIn();
+        if (account == null)
+          throw const AuthFailure('Google sign-in was cancelled.');
+        final tokens = await account.authentication;
+        final credential = GoogleAuthProvider.credential(
+          accessToken: tokens.accessToken,
+          idToken: tokens.idToken,
+        );
+        await _auth.signInWithCredential(credential);
+      });
 
   @override
-  Future<void> sendPasswordReset(String email) async {
-    await _auth.sendPasswordResetEmail(email: email.trim());
-  }
+  Future<void> sendPasswordReset(String email) =>
+      _guard(() => _auth.sendPasswordResetEmail(email: email.trim()));
 
   @override
-  Future<void> sendVerificationEmail() async {
-    await _auth.currentUser?.sendEmailVerification();
-  }
+  Future<void> sendVerificationEmail() =>
+      _guard(() async => _auth.currentUser?.sendEmailVerification());
 
   @override
   Future<AppUser?> reloadUser() async {
     await _auth.currentUser?.reload();
-    return _userFromFirebase(_auth.currentUser);
+    // Refresh the ID token so Firestore rules see the new email_verified claim.
+    await _auth.currentUser?.getIdToken(true);
+    return _map(_auth.currentUser);
   }
 
   @override
   Future<void> signOut() async {
-    await GoogleSignIn().signOut();
+    // Sign out of Google too, so the account picker shows again next time.
+    try {
+      await _google.signOut();
+    } catch (_) {}
     await _auth.signOut();
   }
 
-  AppUser? _userFromFirebase(User? u) {
-    if (u == null) return null;
-    return AppUser(
-      uid: u.uid,
-      email: u.email ?? '',
-      displayName: u.displayName,
-      emailVerified: u.emailVerified,
-    );
+  /// Runs [action] and converts Firebase errors into friendly [AuthFailure]s.
+  Future<void> _guard(Future<void> Function() action) async {
+    try {
+      await action();
+    } on AuthFailure {
+      rethrow;
+    } on FirebaseAuthException catch (e) {
+      throw AuthFailure(_messageFor(e.code));
+    } catch (_) {
+      throw const AuthFailure('Something went wrong. Please try again.');
+    }
+  }
+
+  static String _messageFor(String code) {
+    switch (code) {
+      case 'invalid-email':
+        return 'That email address is not valid.';
+      case 'user-not-found':
+      case 'wrong-password':
+      case 'invalid-credential':
+        return 'Incorrect email or password.';
+      case 'user-disabled':
+        return 'This account has been disabled.';
+      case 'email-already-in-use':
+        return 'An account already exists for that email.';
+      case 'weak-password':
+        return 'Choose a stronger password.';
+      case 'too-many-requests':
+        return 'Too many attempts. Please wait a moment and try again.';
+      case 'network-request-failed':
+        return 'No internet connection. Check your network and try again.';
+      case 'account-exists-with-different-credential':
+        return 'This email is already registered with a different sign-in method.';
+      default:
+        return 'Authentication failed. Please try again.';
+    }
   }
 }

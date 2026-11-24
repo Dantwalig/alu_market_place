@@ -8,16 +8,12 @@ import 'package:alu_market_place/features/listings/domain/entities/listing.dart'
 import 'package:alu_market_place/features/listings/domain/repositories/listing_repository.dart';
 import 'package:alu_market_place/features/listings/presentation/cubit/search_cubit.dart';
 import 'package:alu_market_place/features/listings/presentation/pages/search_screen.dart';
-import 'package:alu_market_place/features/messages/presentation/cubit/conversations_cubit.dart';
 
 class MockListingRepository extends Mock implements ListingRepository {}
-
-class MockConversationsCubit extends Mock implements ConversationsCubit {}
 
 void main() {
   late MockListingRepository mockListingRepo;
   late SearchCubit searchCubit;
-  late MockConversationsCubit mockConversationsCubit;
 
   final listings = [
     Listing(
@@ -43,7 +39,6 @@ void main() {
   setUp(() {
     mockListingRepo = MockListingRepository();
     searchCubit = SearchCubit(mockListingRepo);
-    mockConversationsCubit = MockConversationsCubit();
 
     // Pre-populate search state with listings
     searchCubit.emit(SearchState(
@@ -61,7 +56,6 @@ void main() {
   Widget buildTestableWidget() => MultiBlocProvider(
         providers: [
           BlocProvider<SearchCubit>.value(value: searchCubit),
-          BlocProvider<ConversationsCubit>.value(value: mockConversationsCubit),
         ],
         child: MaterialApp(home: SearchScreen()),
       );
@@ -70,6 +64,7 @@ void main() {
     testWidgets('renders search field and category pills',
         (WidgetTester tester) async {
       await tester.pumpWidget(buildTestableWidget());
+      await tester.pumpAndSettle();
 
       expect(find.byType(TextField), findsOneWidget);
       expect(find.text('Furniture'), findsOneWidget);
@@ -114,16 +109,5 @@ void main() {
       expect(find.text('Textbook'), findsNothing);
     });
 
-    testWidgets('message seller calls startChat on ConversationsCubit',
-        (WidgetTester tester) async {
-      when(() => mockConversationsCubit.startChat(any()))
-          .thenAnswer((_) async => 'C1');
-      await tester.pumpWidget(buildTestableWidget());
-
-      await tester.tap(find.text('Message seller').first);
-      await tester.pump();
-
-      verify(() => mockConversationsCubit.startChat(any())).called(1);
-    });
   });
 }

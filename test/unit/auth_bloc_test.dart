@@ -85,6 +85,7 @@ void main() {
           busy: false,
           message: 'Invalid email or password.',
           isError: true,
+          nonce: 1,
         ),
       ],
     );
@@ -135,6 +136,7 @@ void main() {
         AuthState(
           busy: false,
           message: 'Password reset email sent. Check your inbox.',
+          nonce: 1,
         ),
       ],
     );
@@ -148,7 +150,7 @@ void main() {
       act: (bloc) => bloc.add(const AuthVerificationResendRequested()),
       expect: () => [
         const AuthState(busy: true),
-        AuthState(busy: false, message: 'Verification email sent.'),
+        AuthState(busy: false, message: 'Verification email sent.', nonce: 1),
       ],
     );
 
@@ -162,11 +164,7 @@ void main() {
       act: (bloc) => bloc.add(const AuthLogoutRequested()),
       expect: () => [
         const AuthState(busy: true),
-        AuthState(
-          status: AuthStatus.unauthenticated,
-          user: null,
-          busy: false,
-        ),
+        AuthState(busy: false),
       ],
     );
   });

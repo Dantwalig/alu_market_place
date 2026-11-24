@@ -10,7 +10,7 @@ import '../../../../features/messages/presentation/cubit/conversations_cubit.dar
 import '../../../../features/messages/presentation/pages/messages_screen.dart';
 import '../../../../features/profile/presentation/pages/profile_screen.dart';
 import '../../../../features/settings/presentation/cubit/settings_cubit.dart';
-import '../../bloc/auth_bloc.dart';
+import '../bloc/auth_bloc.dart';
 
 /// Bottom-navigation shell shown after sign in.
 class Shell extends StatelessWidget {

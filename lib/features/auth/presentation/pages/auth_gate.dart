@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../bloc/auth_bloc.dart';
 import 'login_page.dart';
-import 'shell.dart';
 
 /// Routes to the shell when signed in, otherwise to the login page.
 class AuthGate extends StatelessWidget {

@@ -139,7 +139,8 @@ void main() {
       cubit.setCategory('Furniture');
       cubit.addPhoto();
       cubit.next(); // step 0 -> 1
-      cubit.next(); // step 1 -> 2 (publish)
+      cubit.next(); // step 1 -> 2
+      await cubit.publish();
       expect(cubit.state.published, isNotNull);
       expect(cubit.state.published!.id, 'L1');
       cubit.close();
@@ -161,7 +162,8 @@ void main() {
       cubit.setCategory('Furniture');
       cubit.addPhoto();
       cubit.next(); // step 0 -> 1
-      cubit.next(); // step 1 -> 2 (publish)
+      cubit.next(); // step 1 -> 2
+      await cubit.publish();
       expect(cubit.state.publishing, false);
       expect(cubit.state.message, isNotNull);
       expect(cubit.state.message!.isError, true);

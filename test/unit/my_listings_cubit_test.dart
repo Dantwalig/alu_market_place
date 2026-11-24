@@ -48,6 +48,7 @@ void main() {
 
       final cubit = MyListingsCubit(repo);
       await cubit.bind(const AppUser(uid: 'U1', email: 'a@b.c'));
+      await Future.delayed(Duration.zero);
 
       expect(cubit.state.listings, equals(listings));
       expect(cubit.state.loading, false);
@@ -57,6 +58,8 @@ void main() {
     });
 
     test('bind with null user resets state', () async {
+      when(() => repo.watchMyListings(any()))
+          .thenAnswer((_) => Stream.value([]));
       final cubit = MyListingsCubit(repo);
       await cubit.bind(const AppUser(uid: 'U1', email: 'a@b.c'));
       await cubit.bind(null);

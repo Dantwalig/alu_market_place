@@ -83,7 +83,7 @@ void main() {
     test('results exclude own listings and apply filters', () {
       final cubit = SearchCubit(repo);
       // Manually emit a state with listings and a uid
-      cubit.emit(const SearchState(
+      cubit.emit(SearchState(
         all: listings,
         uid: 'U1',
         query: '',
@@ -108,14 +108,14 @@ void main() {
 
     test('loading state is reflected', () {
       final cubit = SearchCubit(repo);
-      cubit.emit(cubit.state.copyWith(loading: true));
+      cubit.emit(const SearchState(loading: true));
       expect(cubit.state.loading, true);
       cubit.close();
     });
 
     test('error message is stored in state', () {
       final cubit = SearchCubit(repo);
-      cubit.emit(cubit.state.copyWith(
+      cubit.emit(SearchState(
         message: UiMessage.error('Could not load listings.'),
       ));
       expect(cubit.state.message, isNotNull);

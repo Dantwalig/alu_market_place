@@ -8,6 +8,10 @@ import 'package:alu_market_place/features/settings/presentation/cubit/settings_c
 class MockSettingsRepository extends Mock implements SettingsRepository {}
 
 void main() {
+  setUpAll(() {
+    registerFallbackValue(const AppSettings());
+  });
+
   late MockSettingsRepository repo;
 
   setUp(() {

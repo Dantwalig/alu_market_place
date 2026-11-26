@@ -4,15 +4,25 @@ A Flutter and Firebase mobile app where ALU students buy, sell and chat about se
 
 ## Screenshots
 
-This is a placeholder for the app screenshots. We need to take them on the phone and save them in `docs/screenshots/` with the file names below.
+All screenshots were taken on the Pixel 6a emulator in portrait.
+
+### Main screens
 
 | Login | Marketplace | Search | Create listing |
 |---|---|---|---|
 | ![Login](docs/screenshots/login.png) | ![Marketplace](docs/screenshots/marketplace.png) | ![Search](docs/screenshots/search.png) | ![Create listing](docs/screenshots/create_listing.png) |
 
-| Chat | Messages | Profile | Settings |
-|---|---|---|---|
-| ![Chat](docs/screenshots/chat.png) | ![Messages](docs/screenshots/messages.png) | ![Profile](docs/screenshots/profile.png) | ![Settings](docs/screenshots/settings.png) |
+| Messages | Profile | Settings |
+|---|---|---|
+| ![Messages](docs/screenshots/messages.png) | ![Profile](docs/screenshots/profile.png) | ![Settings](docs/screenshots/settings.png) |
+
+### Registration and email verification
+
+After registration Firebase sends a verification email. Opening its link confirms the address.
+
+| Create account | Verification email | Confirmation page |
+|---|---|---|
+| ![Create account](docs/screenshots/register.png) | ![Verification email](docs/screenshots/verify_email.png) | ![Confirmation page](docs/screenshots/verify_email_confirmed.png) |
 
 ## Backend and test evidence
 

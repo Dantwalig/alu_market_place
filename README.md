@@ -14,6 +14,36 @@ This is a placeholder for the app screenshots. We need to take them on the phone
 |---|---|---|---|
 | ![Chat](docs/screenshots/chat.png) | ![Messages](docs/screenshots/messages.png) | ![Profile](docs/screenshots/profile.png) | ![Settings](docs/screenshots/settings.png) |
 
+## Backend and test evidence
+
+### Firestore data
+
+The `listings` collection holds seeded demo documents (`demo-01` and onward) in the `alu-market` Firebase project. Each document stores category, createdAt, hub, imageUrl, photoCount, price, sellerId, sellerName, status and title.
+
+| Collections and documents | All fields of one listing |
+|---|---|
+| ![Firestore listings](docs/screenshots/firestore_listing_overview.png) | ![Firestore listing fields](docs/screenshots/firestore_listing_fields.png) |
+
+![Firestore data tab](docs/screenshots/firestore_data_tab.png)
+
+### Firebase usage
+
+Firestore reads and writes recorded in the Firebase console after the demo data was seeded and the app was used.
+
+![Firebase usage](docs/screenshots/firebase_usage.png)
+
+### Tests, analysis and coverage
+
+`flutter test` and `flutter test --coverage` pass all 69 tests, and `flutter analyze` reports no issues.
+
+![flutter test and analyze](docs/screenshots/tests_and_analyze.png)
+
+Overall line coverage is 49.6% (459 of 925 lines). The per-file breakdown below lists the files with the lowest coverage first.
+
+![Line coverage total](docs/screenshots/coverage_total.png)
+
+![Line coverage per file](docs/screenshots/coverage_per_file.png)
+
 ## Features
 
 - **Authentication:** email and password (register, login, logout, password reset, email verification) and Google sign-in. The session is restored after a restart.

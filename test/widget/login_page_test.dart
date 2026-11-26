@@ -54,7 +54,9 @@ void main() {
         (WidgetTester tester) async {
       await tester.pumpWidget(buildTestableWidget());
 
-      final loginButton = find.text('Log in').last;
+      // Match the button itself: 'Log in' is also the app bar title.
+      final loginButton = find.widgetWithText(ElevatedButton, 'Log in');
+      await tester.ensureVisible(loginButton);
       await tester.tap(loginButton);
       await tester.pumpAndSettle(const Duration(seconds: 1));
 

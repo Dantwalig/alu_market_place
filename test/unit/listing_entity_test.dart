@@ -27,6 +27,7 @@ void main() {
         'Kigali Campus Hub',
         12000,
         3,
+        <String>[],
         false,
         null,
         null,

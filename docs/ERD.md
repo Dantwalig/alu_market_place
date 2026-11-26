@@ -34,6 +34,7 @@ erDiagram
         string hub
         int price "RWF"
         int photoCount
+        string[] photos "base64 strings, 1 to 5"
         string status "active | sold"
         string soldToName "set when sold"
         timestamp soldAt "set when sold"

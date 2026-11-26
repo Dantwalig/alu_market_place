@@ -8,6 +8,8 @@ import '../../../../core/tokens.dart';
 /// Shows a listing's photos. With [swipeable] false only the cover is shown,
 /// which is what the list cards use. With [swipeable] true the photos can be
 /// swiped through. Listings without photos get a neutral placeholder.
+///
+/// The current page lives in a [ValueNotifier], so no setState is needed.
 class ListingPhotos extends StatefulWidget {
   const ListingPhotos({
     super.key,
@@ -26,7 +28,7 @@ class ListingPhotos extends StatefulWidget {
 
 class _ListingPhotosState extends State<ListingPhotos> {
   late List<Uint8List> _bytes = _decode(widget.photos);
-  int _page = 0;
+  final ValueNotifier<int> _page = ValueNotifier<int>(0);
 
   static List<Uint8List> _decode(List<String> photos) {
     final out = <Uint8List>[];
@@ -45,8 +47,14 @@ class _ListingPhotosState extends State<ListingPhotos> {
     super.didUpdateWidget(old);
     if (!listEquals(old.photos, widget.photos)) {
       _bytes = _decode(widget.photos);
-      _page = 0;
+      _page.value = 0;
     }
+  }
+
+  @override
+  void dispose() {
+    _page.dispose();
+    super.dispose();
   }
 
   Widget _image(Uint8List b) => Image.memory(
@@ -78,7 +86,7 @@ class _ListingPhotosState extends State<ListingPhotos> {
         child: Stack(children: [
           PageView.builder(
             itemCount: _bytes.length,
-            onPageChanged: (i) => setState(() => _page = i),
+            onPageChanged: (i) => _page.value = i,
             itemBuilder: (_, i) => _image(_bytes[i]),
           ),
           Positioned(
@@ -89,8 +97,11 @@ class _ListingPhotosState extends State<ListingPhotos> {
               decoration: BoxDecoration(
                   color: C.navy.withValues(alpha: 0.7),
                   borderRadius: BorderRadius.circular(10)),
-              child: Text('${_page + 1} / ${_bytes.length}',
-                  style: T.caption.copyWith(color: C.white)),
+              child: ValueListenableBuilder<int>(
+                valueListenable: _page,
+                builder: (_, page, __) => Text('${page + 1} / ${_bytes.length}',
+                    style: T.caption.copyWith(color: C.white)),
+              ),
             ),
           ),
         ]),

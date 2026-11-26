@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:mocktail/mocktail.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -52,13 +54,13 @@ void main() {
       cubit.close();
     });
 
-    test('addPhoto increments up to max 5', () {
+    test('addPhotos adds photos up to max 5', () {
       final cubit = CreateListingCubit(repo, user, 'Hub');
-      cubit.addPhoto();
-      cubit.addPhoto();
+      cubit.addPhotos([Uint8List.fromList([1, 2, 3])]);
+      cubit.addPhotos([Uint8List.fromList([1, 2, 3])]);
       expect(cubit.state.photos, 2);
       for (var i = 0; i < 4; i++) {
-        cubit.addPhoto();
+        cubit.addPhotos([Uint8List.fromList([1, 2, 3])]);
       }
       expect(cubit.state.photos, 5);
       cubit.close();
@@ -77,7 +79,7 @@ void main() {
       cubit.setCategory('Furniture');
       expect(cubit.state.essentialsValid, false); // no photos yet
 
-      cubit.addPhoto();
+      cubit.addPhotos([Uint8List.fromList([1, 2, 3])]);
       expect(cubit.state.essentialsValid, true);
       cubit.close();
     });
@@ -99,7 +101,7 @@ void main() {
       cubit.setTitle('Desk lamp');
       cubit.setPrice('12000');
       cubit.setCategory('Furniture');
-      cubit.addPhoto();
+      cubit.addPhotos([Uint8List.fromList([1, 2, 3])]);
       cubit.next();
       expect(cubit.state.step, 1);
       expect(cubit.state.showErrors, false);
@@ -122,7 +124,7 @@ void main() {
             category: 'Furniture',
             hub: 'Hub',
             price: 12000,
-            photoCount: 1,
+            photos: any(named: 'photos'),
           )).thenAnswer((_) async => const Listing(
             id: 'L1',
             sellerId: 'U1',
@@ -136,7 +138,7 @@ void main() {
       cubit.setTitle('Desk lamp');
       cubit.setPrice('12000');
       cubit.setCategory('Furniture');
-      cubit.addPhoto();
+      cubit.addPhotos([Uint8List.fromList([1, 2, 3])]);
       cubit.next(); // step 0 -> 1
       cubit.next(); // step 1 -> 2
       await cubit.publish();
@@ -153,13 +155,13 @@ void main() {
             category: 'Furniture',
             hub: 'Hub',
             price: 12000,
-            photoCount: 1,
+            photos: any(named: 'photos'),
           )).thenThrow(const AppException('Create failed.'));
       final cubit = CreateListingCubit(repo, user, 'Hub');
       cubit.setTitle('Desk lamp');
       cubit.setPrice('12000');
       cubit.setCategory('Furniture');
-      cubit.addPhoto();
+      cubit.addPhotos([Uint8List.fromList([1, 2, 3])]);
       cubit.next(); // step 0 -> 1
       cubit.next(); // step 1 -> 2
       await cubit.publish();

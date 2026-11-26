@@ -6,6 +6,7 @@ import '../../../../core/ui/nav_cubit.dart';
 import '../../../../core/utils/formatters.dart';
 import '../../../../core/widgets.dart';
 import '../../domain/entities/listing.dart';
+import '../widgets/listing_photos.dart';
 
 class ListingConfirmationScreen extends StatelessWidget {
   final Listing listing;
@@ -54,14 +55,7 @@ class ListingConfirmationScreen extends StatelessWidget {
                 '${listing.sellerName}, your ${listing.title.toLowerCase()} is now available in your Trade Hub.',
                 style: T.bodySlate),
             const SizedBox(height: 16),
-            Container(
-              height: 120,
-              width: double.infinity,
-              decoration: BoxDecoration(
-                  color: C.surface, borderRadius: BorderRadius.circular(12)),
-              child: const Icon(Icons.photo_outlined,
-                  size: 44, color: C.inputBorder),
-            ),
+            ListingPhotos(photos: listing.photos, height: 200, swipeable: true),
             const SizedBox(height: 12),
             SurfaceCard(
               child: Column(

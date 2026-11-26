@@ -16,7 +16,7 @@ abstract class ListingRepository {
     required String category,
     required String hub,
     required int price,
-    required int photoCount,
+    required List<String> photos,
   });
 
   /// Update (only the provided fields change).

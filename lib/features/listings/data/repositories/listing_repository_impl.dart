@@ -24,6 +24,10 @@ class ListingRepositoryImpl implements ListingRepository {
       hub: m['hub'] as String? ?? '',
       price: (m['price'] as num?)?.toInt() ?? 0,
       photoCount: (m['photoCount'] as num?)?.toInt() ?? 1,
+      photos: [
+        for (final p in (m['photos'] as List<dynamic>? ?? const []))
+          if (p is String) p
+      ],
       sold: m['status'] == 'sold',
       soldToName: m['soldToName'] as String?,
       soldAt: _ts(m['soldAt']),
@@ -60,7 +64,7 @@ class ListingRepositoryImpl implements ListingRepository {
     required String category,
     required String hub,
     required int price,
-    required int photoCount,
+    required List<String> photos,
   }) async {
     final ref = _col.doc();
     await guardFirestore(() => ref.set({
@@ -70,7 +74,8 @@ class ListingRepositoryImpl implements ListingRepository {
           'category': category,
           'hub': hub,
           'price': price,
-          'photoCount': photoCount,
+          'photoCount': photos.length,
+          'photos': photos,
           'status': 'active',
           'createdAt': FieldValue.serverTimestamp(),
         }));
@@ -82,7 +87,8 @@ class ListingRepositoryImpl implements ListingRepository {
       category: category,
       hub: hub,
       price: price,
-      photoCount: photoCount,
+      photoCount: photos.length,
+      photos: photos,
       createdAt: DateTime.now(),
     );
   }

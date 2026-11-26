@@ -9,6 +9,9 @@ class Listing extends Equatable {
   final String hub;
   final int price;
   final int photoCount;
+
+  /// Base64 encoded JPEG photos. The first one is the cover.
+  final List<String> photos;
   final bool sold;
   final String? soldToName;
   final DateTime? soldAt;
@@ -23,6 +26,7 @@ class Listing extends Equatable {
     required this.hub,
     required this.price,
     this.photoCount = 1,
+    this.photos = const [],
     this.sold = false,
     this.soldToName,
     this.soldAt,
@@ -39,6 +43,7 @@ class Listing extends Equatable {
         hub,
         price,
         photoCount,
+        photos,
         sold,
         soldToName,
         soldAt,

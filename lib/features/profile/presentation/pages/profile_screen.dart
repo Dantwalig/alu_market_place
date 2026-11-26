@@ -9,6 +9,7 @@ import '../../../../core/widgets.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
 import '../../../listings/domain/entities/listing.dart';
 import '../../../listings/presentation/cubit/my_listings_cubit.dart';
+import '../../../listings/presentation/widgets/listing_photos.dart';
 import '../../../settings/presentation/pages/settings_screen.dart';
 import '../cubit/profile_cubit.dart';
 import 'edit_listing_dialog.dart';
@@ -212,6 +213,11 @@ class ProfileScreen extends StatelessWidget {
   Widget _card(BuildContext context, Listing l) => SurfaceCard(
         padding: const EdgeInsets.fromLTRB(16, 12, 4, 12),
         child: Row(children: [
+          SizedBox(
+            width: 64,
+            child: ListingPhotos(photos: l.photos, height: 64),
+          ),
+          const SizedBox(width: 12),
           Expanded(
             child:
                 Column(crossAxisAlignment: CrossAxisAlignment.start, children: [

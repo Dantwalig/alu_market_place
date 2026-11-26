@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:typed_data';
+
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -9,7 +12,7 @@ import '../../domain/repositories/listing_repository.dart';
 
 class CreateListingState extends Equatable {
   final int step; // 0 essentials, 1 meetup hub, 2 review
-  final int photos;
+  final List<Uint8List> photoBytes;
   final String title;
   final String priceText;
   final String? category;
@@ -22,7 +25,7 @@ class CreateListingState extends Equatable {
   const CreateListingState({
     required this.hub,
     this.step = 0,
-    this.photos = 0,
+    this.photoBytes = const [],
     this.title = '',
     this.priceText = '',
     this.category,
@@ -32,6 +35,7 @@ class CreateListingState extends Equatable {
     this.message,
   });
 
+  int get photos => photoBytes.length;
   int get priceValue =>
       int.tryParse(priceText.replaceAll(RegExp(r'[^0-9]'), '')) ?? 0;
   bool get essentialsValid =>
@@ -51,7 +55,7 @@ class CreateListingState extends Equatable {
 
   CreateListingState copyWith({
     int? step,
-    int? photos,
+    List<Uint8List>? photoBytes,
     String? title,
     String? priceText,
     String? category,
@@ -63,7 +67,7 @@ class CreateListingState extends Equatable {
   }) =>
       CreateListingState(
         step: step ?? this.step,
-        photos: photos ?? this.photos,
+        photoBytes: photoBytes ?? this.photoBytes,
         title: title ?? this.title,
         priceText: priceText ?? this.priceText,
         category: category ?? this.category,
@@ -77,7 +81,7 @@ class CreateListingState extends Equatable {
   @override
   List<Object?> get props => [
         step,
-        photos,
+        photoBytes,
         title,
         priceText,
         category,
@@ -101,10 +105,33 @@ class CreateListingCubit extends Cubit<CreateListingState> {
   void setCategory(String? v) => emit(state.copyWith(category: v));
   void setHub(String v) => emit(state.copyWith(hub: v));
 
-  /// This is a placeholder for image_picker. We need to replace this photo counter (max 5) with real photo picking and upload.
-  void addPhoto() =>
-      emit(state.copyWith(photos: state.photos >= 5 ? 5 : state.photos + 1));
-  void clearPhotos() => emit(state.copyWith(photos: 0));
+  static const maxPhotos = 5;
+
+  /// Photos are stored inside the listing document (limit 1 MiB), so the
+  /// combined size of the picked photos is capped well below that.
+  static const maxTotalBytes = 600 * 1024;
+
+  void addPhotos(List<Uint8List> added) {
+    final room = maxPhotos - state.photoBytes.length;
+    if (room <= 0 || added.isEmpty) return;
+    final next = [...state.photoBytes, ...added.take(room)];
+    final total = next.fold<int>(0, (sum, b) => sum + b.length);
+    if (total > maxTotalBytes) {
+      emit(state.copyWith(
+          message: UiMessage.error(
+              'Those photos are too large. Choose fewer or smaller photos.')));
+      return;
+    }
+    emit(state.copyWith(photoBytes: next));
+  }
+
+  void removePhotoAt(int index) {
+    if (index < 0 || index >= state.photoBytes.length) return;
+    final next = [...state.photoBytes]..removeAt(index);
+    emit(state.copyWith(photoBytes: next));
+  }
+
+  void clearPhotos() => emit(state.copyWith(photoBytes: const []));
 
   void next() {
     if (state.step == 0) {
@@ -138,7 +165,7 @@ class CreateListingCubit extends Cubit<CreateListingState> {
         category: state.category!,
         hub: state.hub,
         price: state.priceValue,
-        photoCount: state.photos,
+        photos: [for (final b in state.photoBytes) base64Encode(b)],
       );
       emit(state.copyWith(publishing: false, published: listing));
     } on AppException catch (e) {

@@ -37,10 +37,13 @@ service cloud.firestore {
       allow read: if verified();
       allow create: if verified()
         && request.resource.data.keys().hasOnly(
-             ['sellerId', 'sellerName', 'title', 'category', 'hub', 'price', 'photoCount', 'status', 'createdAt'])
+             ['sellerId', 'sellerName', 'title', 'category', 'hub', 'price', 'photoCount', 'photos', 'status', 'createdAt'])
         && request.resource.data.sellerId == request.auth.uid
         && request.resource.data.status == 'active'
         && request.resource.data.createdAt == request.time
+        && request.resource.data.photos is list
+        && request.resource.data.photos.size() >= 1
+        && request.resource.data.photos.size() <= 5
         && validListingFields();
       allow update: if verified()
         && resource.data.sellerId == request.auth.uid

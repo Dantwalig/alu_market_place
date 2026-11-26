@@ -8,6 +8,7 @@ import '../../../../core/widgets.dart';
 import '../../../messages/presentation/cubit/conversations_cubit.dart';
 import '../../../messages/presentation/pages/chat_screen.dart';
 import '../../domain/entities/listing.dart';
+import '../widgets/listing_photos.dart';
 import '../cubit/browse_cubit.dart';
 import 'create_listing_screen.dart';
 
@@ -63,6 +64,8 @@ class BrowseScreen extends StatelessWidget {
                           child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
+                                ListingPhotos(photos: l.photos),
+                                const SizedBox(height: 12),
                                 Row(children: [
                                   Expanded(
                                       child: Text(l.title,

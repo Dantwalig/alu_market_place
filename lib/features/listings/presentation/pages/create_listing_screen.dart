@@ -1,5 +1,8 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:image_picker/image_picker.dart';
 
 import '../../../../core/constants/hubs.dart';
 import '../../../../core/tokens.dart';
@@ -44,12 +47,40 @@ class CreateListingScreen extends StatefulWidget {
 class _CreateListingScreenState extends State<CreateListingScreen> {
   final _title = TextEditingController();
   final _price = TextEditingController();
+  final _picker = ImagePicker();
 
   @override
   void dispose() {
     _title.dispose();
     _price.dispose();
     super.dispose();
+  }
+
+  /// Opens the gallery, lets the student choose several photos at once and
+  /// shrinks them (max 900 px, JPEG quality 60) so they fit in the listing.
+  Future<void> _pickPhotos(
+      BuildContext context, CreateListingCubit cubit) async {
+    final remaining = CreateListingCubit.maxPhotos - cubit.state.photos;
+    if (remaining <= 0) {
+      showUiMessage(context,
+          UiMessage.error('You can add up to ${CreateListingCubit.maxPhotos} photos.'));
+      return;
+    }
+    try {
+      final files = await _picker.pickMultiImage(
+          maxWidth: 900, maxHeight: 900, imageQuality: 60);
+      if (files.isEmpty) return;
+      final bytes = <Uint8List>[];
+      for (final f in files.take(remaining)) {
+        bytes.add(await f.readAsBytes());
+      }
+      cubit.addPhotos(bytes);
+    } catch (_) {
+      if (context.mounted) {
+        showUiMessage(context,
+            UiMessage.error('Could not open your photos. Please try again.'));
+      }
+    }
   }
 
   void _back(BuildContext context) {
@@ -94,7 +125,7 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
                 child: SingleChildScrollView(
                   padding: const EdgeInsets.all(20),
                   child: [
-                    _essentials(s, cubit, incomplete),
+                    _essentials(context, s, cubit, incomplete),
                     _hubStep(s, cubit),
                     _review(s, context)
                   ][s.step],
@@ -118,8 +149,7 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
     );
   }
 
-  Widget _essentials(
-      CreateListingState s, CreateListingCubit cubit, bool incomplete) {
+  Widget _essentials(BuildContext context, CreateListingState s, CreateListingCubit cubit, bool incomplete) {
     final photoError = s.photoError;
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Text(incomplete ? 'Complete your listing' : 'Start with the essentials',
@@ -134,52 +164,87 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
       const SizedBox(height: 20),
       const Text('PHOTOS', style: T.fieldLabel),
       const SizedBox(height: 8),
-      GestureDetector(
-        // This is a placeholder for the photo picker. We need to call image_picker here and upload the chosen photos.
-        onTap: cubit.addPhoto,
-        child: Container(
-          height: 130,
-          width: double.infinity,
-          decoration: BoxDecoration(
-            color: s.photos > 0 ? C.surface : C.white,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(
-                color: photoError != null
-                    ? C.red
-                    : (s.photos > 0 ? C.border : C.inputBorder)),
-          ),
-          child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-            Icon(
-                s.photos > 0
-                    ? Icons.photo_library_outlined
-                    : Icons.photo_camera_outlined,
-                color: C.orange,
-                size: 26),
-            const SizedBox(height: 8),
-            Text(s.photos > 0 ? 'Add another photo' : 'Add photos',
-                style: T.label),
-            const SizedBox(height: 2),
-            Text('${s.photos} of 5 photos', style: T.caption),
-          ]),
-        ),
+      SizedBox(
+        height: 96,
+        child: ListView(scrollDirection: Axis.horizontal, children: [
+          if (s.photos < CreateListingCubit.maxPhotos)
+            GestureDetector(
+              onTap: () => _pickPhotos(context, cubit),
+              child: Container(
+                width: 96,
+                margin: const EdgeInsets.only(right: 10),
+                decoration: BoxDecoration(
+                  color: C.white,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                      color: photoError != null ? C.red : C.inputBorder),
+                ),
+                child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(Icons.add_a_photo_outlined,
+                          color: C.orange, size: 26),
+                      const SizedBox(height: 6),
+                      Text(s.photos == 0 ? 'Add photos' : 'Add more',
+                          style: T.caption),
+                    ]),
+              ),
+            ),
+          for (var i = 0; i < s.photoBytes.length; i++)
+            Container(
+              width: 96,
+              margin: const EdgeInsets.only(right: 10),
+              child: Stack(fit: StackFit.expand, children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: Image.memory(s.photoBytes[i],
+                      fit: BoxFit.cover, gaplessPlayback: true),
+                ),
+                if (i == 0)
+                  Positioned(
+                    left: 6,
+                    bottom: 6,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 6, vertical: 2),
+                      decoration: BoxDecoration(
+                          color: C.navy.withValues(alpha: 0.75),
+                          borderRadius: BorderRadius.circular(8)),
+                      child: Text('Cover',
+                          style: T.caption.copyWith(color: C.white)),
+                    ),
+                  ),
+                Positioned(
+                  right: 4,
+                  top: 4,
+                  child: GestureDetector(
+                    onTap: () => cubit.removePhotoAt(i),
+                    child: Container(
+                      padding: const EdgeInsets.all(3),
+                      decoration: const BoxDecoration(
+                          color: C.navy, shape: BoxShape.circle),
+                      child:
+                          const Icon(Icons.close, size: 14, color: C.white),
+                    ),
+                  ),
+                ),
+              ]),
+            ),
+        ]),
       ),
+      const SizedBox(height: 6),
+      Text('${s.photos} of ${CreateListingCubit.maxPhotos} photos', style: T.caption),
       if (photoError != null)
         Padding(
             padding: const EdgeInsets.only(top: 6),
             child: Text(photoError, style: T.caption.copyWith(color: C.red))),
-      if (s.photos > 0) ...[
-        const SizedBox(height: 8),
-        Row(children: [
-          Pill('${s.photos} of 5 photos · Cover'),
-          const SizedBox(width: 8),
-          TextButton(
-            onPressed: cubit.clearPhotos,
-            child: Text('Clear',
-                style: T.caption
-                    .copyWith(color: C.navy, fontWeight: FontWeight.w600)),
-          ),
-        ]),
-      ],
+      if (s.photos > 0)
+        TextButton(
+          onPressed: cubit.clearPhotos,
+          child: Text('Clear all',
+              style: T.caption
+                  .copyWith(color: C.navy, fontWeight: FontWeight.w600)),
+        ),
       const SizedBox(height: 20),
       AppField(
         label: 'Title',
